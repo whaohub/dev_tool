@@ -31,6 +31,8 @@ Plug 'vim-airline/vim-airline-themes'
 Plug 'morhetz/gruvbox'
 Plug 'preservim/nerdtree'
 Plug '~/.fzf'
+Plug 'junegunn/fzf.vim'
+Plug 'APZelos/blamer.nvim'
 " Initialize plugin system
 call plug#end()
 
@@ -55,7 +57,13 @@ colo gruvbox
 nnoremap <leader>n :NERDTreeFocus<CR>
 nnoremap <C-n> :NERDTree<CR>
 nnoremap <C-t> :NERDTreeToggle<CR>
-nnoremap <C-f> :NERDTreeFind<CR>
 
-"coc-clang config
+"PLUGIN: FZF
+nnoremap <silent> <C-p> :FZF<CR>
+
+"PLUGIN: blamer
+let g:blamer_enabled = 1
+let g:blamer_show_in_visual_modes = 0
+let g:blamer_prefix = ' > '
+""coc-clang config
 let g:coc_global_extensions = ['coc-clangd']
