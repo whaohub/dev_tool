@@ -13,7 +13,7 @@ vim.g.mapleader = " "
 vim.keymap.set("i", "jj", "<Esc>", {})
 
 -- lsp config
-vim.keymap.set("n", "gi", ":ClangdSwitchSourceHeader<cr>", { noremap = true, silent = true })
+vim.keymap.set("n", "<leader>h", ":ClangdSwitchSourceHeader<cr>", { noremap = true, silent = true })
 
 -----------------
 -- Normal mode --
