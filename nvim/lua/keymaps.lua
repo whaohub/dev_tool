@@ -8,6 +8,13 @@ local opts = {
 vim.keymap.set("n", "<Space>", "<Nop>", { silent = true, remap = false })
 
 vim.g.mapleader = " "
+
+-- map jj to esc
+vim.keymap.set("i", "jj", "<Esc>", {})
+
+-- lsp config
+vim.keymap.set("n", "gi", ":ClangdSwitchSourceHeader<cr>", { noremap = true, silent = true })
+
 -----------------
 -- Normal mode --
 -----------------
