@@ -47,6 +47,14 @@ require("lazy").setup({
     "williamboman/mason-lspconfig.nvim",
     "neovim/nvim-lspconfig",
   },
+  	-- Better terminal integration
+	{
+		"akinsho/toggleterm.nvim",
+		version = "*",
+		config = function()
+			require("config.toggleterm")
+		end,
+	},
   -- Fuzzy finder
   {
     "nvim-telescope/telescope.nvim",
