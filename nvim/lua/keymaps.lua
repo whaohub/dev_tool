@@ -11,6 +11,14 @@ vim.g.mapleader = " "
 
 -- map jj to esc
 vim.keymap.set("i", "jj", "<Esc>", {})
+-- Write the buffer
+vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = true })
+
+-- Quit Neovim
+vim.api.nvim_set_keymap('n', '<Leader>q', ':q<CR>', { noremap = true, silent = true })
+
+-- Close the current buffer
+vim.api.nvim_set_keymap('n', '<Leader>c', ':bd<CR>', { noremap = true, silent = true })
 
 -- lsp config
 vim.keymap.set("n", "<leader>h", ":ClangdSwitchSourceHeader<cr>", { noremap = true, silent = true })
