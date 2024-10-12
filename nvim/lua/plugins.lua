@@ -12,7 +12,8 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
-  { "ellisonleao/gruvbox.nvim" },
+-- color theme
+  { "sainnhe/sonokai" },
   -- Vscode-like pictograms
   {
     "onsails/lspkind.nvim",
