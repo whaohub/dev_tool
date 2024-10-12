@@ -107,4 +107,9 @@ nvim_tree.setup({
 	diagnostics = {
 		enable = true,
 	},
+  update_focused_file = {
+    enable = true,      -- Enable this feature
+    update_cwd = true,  -- Update the current working directory to the file's location
+    ignore_list = {}    -- List of files to ignore when focusing
+  }
 })
