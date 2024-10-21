@@ -13,7 +13,7 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
 -- color theme
-  { "morhetz/gruvbox" },
+  { "sainnhe/gruvbox-material" },
   -- Vscode-like pictograms
   {
     "onsails/lspkind.nvim",
