@@ -1,3 +1,22 @@
+local telescope_ok, telescope = pcall(require, "telescope")
+if not telescope_ok then
+    return
+end
+
+local actions = require('telescope.actions')
+
+-- Telescope setup with custom mappings
+telescope.setup {
+  defaults = {
+    mappings = {
+      i = {
+        ["<C-n>"] = actions.cycle_history_next,
+        ["<C-p>"] = actions.cycle_history_prev,
+      },
+    },
+  },
+}
+
 local is_ok, builtin = pcall(require, "telescope.builtin")
 if not is_ok then
 	return
