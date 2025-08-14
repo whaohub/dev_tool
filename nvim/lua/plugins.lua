@@ -12,7 +12,7 @@ end
 vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
--- color theme
+  -- color theme
   { "sainnhe/gruvbox-material" },
   -- Vscode-like pictograms
   {
@@ -48,14 +48,14 @@ require("lazy").setup({
     "williamboman/mason-lspconfig.nvim",
     "neovim/nvim-lspconfig",
   },
-  	-- Better terminal integration
-	{
-		"akinsho/toggleterm.nvim",
-		version = "*",
-		config = function()
-			require("config.toggleterm")
-		end,
-	},
+  -- Better terminal integration
+  {
+    "akinsho/toggleterm.nvim",
+    version = "*",
+    config = function()
+      require("config.toggleterm")
+    end,
+  },
   -- Fuzzy finder
   {
     "nvim-telescope/telescope.nvim",
@@ -97,6 +97,15 @@ require("lazy").setup({
     dependencies = { "nvim-tree/nvim-web-devicons" },
     config = function()
       require("config.lualine")
+    end,
+  },
+  -- bufferline
+  {
+    'akinsho/bufferline.nvim',
+    version = "*",
+    dependencies = { 'nvim-tree/nvim-web-devicons' },
+    config = function()
+      require("config.bufferline")
     end,
   },
   -- Git integration
