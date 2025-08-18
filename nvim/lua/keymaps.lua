@@ -17,12 +17,14 @@ vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = t
 -- Quit Neovim
 vim.api.nvim_set_keymap('n', '<Leader>q', ':q<CR>', { noremap = true, silent = true })
 
--- Close the current buffer
-vim.api.nvim_set_keymap('n', '<Leader>c', ':bd<CR>', { noremap = true, silent = true })
-
--- lsp config
 vim.keymap.set("n", "<leader>h", ":ClangdSwitchSourceHeader<cr>", { noremap = true, silent = true })
-
+-- Trouble.nvim 全局快捷键
+vim.keymap.set("n", "<leader>xx", ":Trouble diagnostics toggle<cr>", { noremap = true, silent = true, desc = "Diagnostics (Trouble)" })
+vim.keymap.set("n", "<leader>xX", ":Trouble diagnostics toggle filter.buf=0<cr>", { noremap = true, silent = true, desc = "Buffer Diagnostics (Trouble)" })
+vim.keymap.set("n", "<leader>cs", ":Trouble symbols toggle focus=false<cr>", { noremap = true, silent = true, desc = "Symbols (Trouble)" })
+vim.keymap.set("n", "<leader>cl", ":Trouble lsp toggle focus=false win.position=right<cr>", { noremap = true, silent = true, desc = "LSP Definitions / references / ... (Trouble)" })
+vim.keymap.set("n", "<leader>xL", ":Trouble loclist toggle<cr>", { noremap = true, silent = true, desc = "Location List (Trouble)" })
+vim.keymap.set("n", "<leader>xQ", ":Trouble qflist toggle<cr>", { noremap = true, silent = true, desc = "Quickfix List (Trouble)" })
 -----------------
 -- Normal mode --
 -----------------
