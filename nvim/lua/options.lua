@@ -16,6 +16,7 @@ vim.opt.ignorecase = true -- ignore case in searches by default
 vim.opt.smartcase = true -- but make it case sensitive if an uppercase is entered
 vim.opt.number = true -- show absolute number
 vim.opt.relativenumber = true -- add numbers to each line on the left side
+vim.opt.foldopen = { "search" }
 
 -- 仅在普通 neovim 环境中加载的选项
 if not vim.g.vscode then

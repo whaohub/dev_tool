@@ -2,6 +2,7 @@
 require("options")
 
 if vim.g.vscode then
+  require("vscode-keymaps")
   -- Only loaded when embedded in VS Code
 else
   -- Standard standalone Neovim
