@@ -1,0 +1,29 @@
+# 全局 git 配置（只包含终端体验相关设置，不含用户身份）
+# 由 install.sh 通过 include.path 引入，不会覆盖你自己的 ~/.gitconfig
+
+[init]
+	defaultBranch = main
+[color]
+	ui = auto
+[core]
+	pager = delta
+	editor = nvim
+[interactive]
+	diffFilter = delta --color-only
+[delta]
+	navigate = true
+	line-numbers = true
+	side-by-side = false
+	syntax-theme = ansi
+	features = decorations
+[delta "decorations"]
+	commit-decoration-style = bold yellow box ul
+	file-style = bold yellow ul
+	file-decoration-style = none
+	hunk-header-decoration-style = yellow box
+[merge]
+	conflictstyle = zdiff3
+[diff]
+	colorMoved = default
+[pull]
+	ff = only

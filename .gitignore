@@ -1,0 +1,5 @@
+# 本仓库不包含的私有内容
+secrets.zsh
+*.local.zsh
+.DS_Store
+tmux/.tmux.local.conf
