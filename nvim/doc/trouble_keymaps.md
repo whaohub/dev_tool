@@ -44,4 +44,15 @@
 
 ---
 
-如需 Trouble 面板的全局打开/关闭快捷键（如 `<Leader>xx`），请在主配置或 keymaps.lua 查阅或补充。
+
+## Trouble 全局快捷键（主配置添加）
+| 快捷键         | 功能描述                       |
+|----------------|--------------------------------|
+| <Leader>xx     | 诊断列表（Trouble）            |
+| <Leader>xX     | 当前缓冲区诊断（Trouble）      |
+| <Leader>cs     | 符号列表（Trouble）            |
+| <Leader>cl     | LSP 定义/引用等（Trouble）     |
+| <Leader>xL     | Location List（Trouble）        |
+| <Leader>xQ     | Quickfix List（Trouble）        |
+
+这些快捷键可在任意位置直接打开 Trouble 对应功能面板。

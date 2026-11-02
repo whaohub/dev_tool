@@ -1,44 +1,29 @@
-local is_ok, gitsigns = pcall(require, 'gitsigns')
+local is_ok, gitsigns = pcall(require, "gitsigns")
 if not is_ok then
-    return
+  return
 end
 
-gitsigns.setup {
-    signs                        = {
-        add          = { text = '│' },
-        change       = { text = '│' },
-        delete       = { text = '_' },
-        topdelete    = { text = '‾' },
-        changedelete = { text = '~' },
-        untracked    = { text = '┆' },
-    },
-    signcolumn                   = true, -- Toggle with `:Gitsigns toggle_signs`
-    numhl                        = false, -- Toggle with `:Gitsigns toggle_numhl`
-    linehl                       = false, -- Toggle with `:Gitsigns toggle_linehl`
-    word_diff                    = false, -- Toggle with `:Gitsigns toggle_word_diff`
-    watch_gitdir                 = {
-        interval = 1000,
-        follow_files = true
-    },
-    attach_to_untracked          = true,
-    current_line_blame           = false, -- Toggle with `:Gitsigns toggle_current_line_blame`
-    current_line_blame_opts      = {
-        virt_text = true,
-        virt_text_pos = 'eol', -- 'eol' | 'overlay' | 'right_align'
-        delay = 1000,
-        ignore_whitespace = false,
-    },
-    current_line_blame_formatter = '<author>, <author_time:%Y-%m-%d> - <summary>',
-    sign_priority                = 6,
-    update_debounce              = 100,
-    status_formatter             = nil, -- Use default
-    max_file_length              = 40000, -- Disable if file is longer than this (in lines)
-    preview_config               = {
-        -- Options passed to nvim_open_win
-        border = 'single',
-        style = 'minimal',
-        relative = 'cursor',
-        row = 0,
-        col = 1
-    },
-}
+gitsigns.setup({
+  signs = {
+    add = { text = "│" },
+    change = { text = "│" },
+    delete = { text = "_" },
+    topdelete = { text = "‾" },
+    changedelete = { text = "~" },
+    untracked = { text = "┆" },
+  },
+  current_line_blame = false,
+  current_line_blame_opts = { virt_text = true, virt_text_pos = "eol", delay = 1000 },
+  preview_config = { border = "rounded", style = "minimal", relative = "cursor", row = 0, col = 1 },
+  on_attach = function(bufnr)
+    local function map(mode, lhs, rhs, desc)
+      vim.keymap.set(mode, lhs, rhs, { buffer = bufnr, silent = true, desc = "Git: " .. desc })
+    end
+    map("n", "]c", gitsigns.next_hunk, "Next hunk")
+    map("n", "[c", gitsigns.prev_hunk, "Previous hunk")
+    map("n", "<leader>gp", gitsigns.preview_hunk, "Preview hunk")
+    map("n", "<leader>gb", function() gitsigns.blame_line({ full = true }) end, "Blame line")
+    map("n", "<leader>gr", gitsigns.reset_hunk, "Reset hunk")
+    map("n", "<leader>gs", gitsigns.stage_hunk, "Stage hunk")
+  end,
+})

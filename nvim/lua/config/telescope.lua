@@ -1,40 +1,29 @@
-local telescope_ok, telescope = pcall(require, "telescope")
-if not telescope_ok then
-    return
+local is_ok, telescope = pcall(require, "telescope")
+if not is_ok then
+  return
 end
 
-local actions = require('telescope.actions')
+local actions = require("telescope.actions")
 
--- Telescope setup with custom mappings
-telescope.setup {
+telescope.setup({
   defaults = {
+    prompt_prefix = "  ",
+    selection_caret = " ",
+    path_display = { "smart" },
+    file_ignore_patterns = { "%.git/", "node_modules/", "%.o", "%.a" },
     mappings = {
       i = {
         ["<C-n>"] = actions.cycle_history_next,
         ["<C-p>"] = actions.cycle_history_prev,
-        ["<C-j>"] = require('telescope.actions').move_selection_next,
-        ["<C-k>"] = require('telescope.actions').move_selection_previous,
+        ["<C-j>"] = actions.move_selection_next,
+        ["<C-k>"] = actions.move_selection_previous,
+        ["<esc>"] = actions.close,
       },
-      n = {  -- 普通模式
-        ["<C-j>"] = require('telescope.actions').move_selection_next,
-        ["<C-k>"] = require('telescope.actions').move_selection_previous,
-      }
+      n = {
+        ["<C-j>"] = actions.move_selection_next,
+        ["<C-k>"] = actions.move_selection_previous,
+      },
     },
   },
-}
-
-local is_ok, builtin = pcall(require, "telescope.builtin")
-if not is_ok then
-	return
-end
-
-vim.keymap.set("n", "<leader>ff", builtin.find_files, {})
-vim.keymap.set("n", "<leader>fg", builtin.git_files, {})
-vim.keymap.set("n", "<leader>fo", builtin.oldfiles, {}) -- i.e. previously open files
-vim.keymap.set('n', '<leader>fb', builtin.buffers, {})
-vim.keymap.set('n', '<leader>fl', builtin.live_grep, {})
-vim.keymap.set('n', '<leader>fc', builtin.grep_string, {})
-
--- vim.keymap.set("n", "<leader>fc", function() -- fc = find by command
--- 	builtin.grep_string({ search = vim.fn.input("Grep > ") })
--- end)
+})
+-- 相关按键见 lua/keymaps.lua

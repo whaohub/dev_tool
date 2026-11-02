@@ -1,63 +1,64 @@
--- Define common options
-local opts = {
-	noremap = true, -- non-recursive
-	silent = true, -- do not show message
-}
+-- 全局按键映射（仅独立 Neovim）
+-- 缓冲区内的 LSP 映射见 lua/lsp.lua，文件树内部映射见 lua/config/nvim-tree.lua
 
--- set leader key \ to space
-vim.keymap.set("n", "<Space>", "<Nop>", { silent = true, remap = false })
+local map = function(mode, lhs, rhs, desc)
+  vim.keymap.set(mode, lhs, rhs, { silent = true, desc = desc })
+end
 
-vim.g.mapleader = " "
+-- 保存 / 退出
+map("n", "<leader>w", "<cmd>write<cr>", "Save file")
+map("n", "<leader>q", "<cmd>quit<cr>", "Quit window")
+map("n", "<leader>Q", "<cmd>quitall<cr>", "Quit all")
+map("i", "jj", "<esc>", "Exit insert mode")
 
--- map jj to esc
-vim.keymap.set("i", "jj", "<Esc>", {})
--- Write the buffer
-vim.api.nvim_set_keymap('n', '<Leader>w', ':w<CR>', { noremap = true, silent = true })
+-- 窗口导航
+map("n", "<C-h>", "<C-w>h", "Go to left window")
+map("n", "<C-j>", "<C-w>j", "Go to lower window")
+map("n", "<C-k>", "<C-w>k", "Go to upper window")
+map("n", "<C-l>", "<C-w>l", "Go to right window")
 
--- Quit Neovim
-vim.api.nvim_set_keymap('n', '<Leader>q', ':q<CR>', { noremap = true, silent = true })
+-- 窗口缩放
+map("n", "<C-Up>", "<cmd>resize -2<cr>", "Shrink height")
+map("n", "<C-Down>", "<cmd>resize +2<cr>", "Grow height")
+map("n", "<C-Left>", "<cmd>vertical resize -2<cr>", "Shrink width")
+map("n", "<C-Right>", "<cmd>vertical resize +2<cr>", "Grow width")
 
-vim.keymap.set("n", "<leader>h", ":ClangdSwitchSourceHeader<cr>", { noremap = true, silent = true })
--- Trouble.nvim 全局快捷键
-vim.keymap.set("n", "<leader>xx", ":Trouble diagnostics toggle<cr>", { noremap = true, silent = true, desc = "Diagnostics (Trouble)" })
-vim.keymap.set("n", "<leader>xX", ":Trouble diagnostics toggle filter.buf=0<cr>", { noremap = true, silent = true, desc = "Buffer Diagnostics (Trouble)" })
-vim.keymap.set("n", "<leader>cs", ":Trouble symbols toggle focus=false<cr>", { noremap = true, silent = true, desc = "Symbols (Trouble)" })
-vim.keymap.set("n", "<leader>cl", ":Trouble lsp toggle focus=false win.position=right<cr>", { noremap = true, silent = true, desc = "LSP Definitions / references / ... (Trouble)" })
-vim.keymap.set("n", "<leader>xL", ":Trouble loclist toggle<cr>", { noremap = true, silent = true, desc = "Location List (Trouble)" })
-vim.keymap.set("n", "<leader>xQ", ":Trouble qflist toggle<cr>", { noremap = true, silent = true, desc = "Quickfix List (Trouble)" })
------------------
--- Normal mode --
------------------
+-- 缩进后保持选区
+map("v", "<", "<gv", "Indent left")
+map("v", ">", ">gv", "Indent right")
 
--- Hint: see `:h vim.map.set()`
--- Better window navigation
-vim.keymap.set("n", "<C-h>", "<C-w>h", opts)
-vim.keymap.set("n", "<C-j>", "<C-w>j", opts)
-vim.keymap.set("n", "<C-k>", "<C-w>k", opts)
-vim.keymap.set("n", "<C-l>", "<C-w>l", opts)
+-- 文件树
+map("n", "<leader>e", "<cmd>NvimTreeToggle<cr>", "Toggle file tree")
 
--- Resize with arrows
--- delta: 2 lines
-vim.keymap.set("n", "<C-Up>", ":resize -2<CR>", opts)
-vim.keymap.set("n", "<C-Down>", ":resize +2<CR>", opts)
-vim.keymap.set("n", "<C-Left>", ":vertical resize -2<CR>", opts)
-vim.keymap.set("n", "<C-Right>", ":vertical resize +2<CR>", opts)
+-- 缓冲区（bufferline）
+map("n", "gT", "<cmd>BufferLineCyclePrev<cr>", "Previous buffer")
+map("n", "gt", "<cmd>BufferLineCycleNext<cr>", "Next buffer")
+map("n", "<leader>bc", "<cmd>bdelete<cr>", "Close buffer")
+map("n", "<leader>bp", "<cmd>BufferLinePickClose<cr>", "Pick buffer to close")
+map("n", "<leader>bo", "<cmd>BufferLineCloseOthers<cr>", "Close other buffers")
+for i = 1, 9 do
+  map("n", "<leader>" .. i, ("<cmd>BufferLineGoToBuffer %d<cr>"):format(i), "Buffer " .. i)
+end
 
--- For nvim-tree.lua
--- default leader key: \
-vim.keymap.set("n", "<leader>e", ":NvimTreeToggle<CR>", opts)
+-- 模糊查找（telescope，按需加载）
+local function pick(lhs, builtin, desc)
+  vim.keymap.set("n", lhs, function()
+    require("telescope.builtin")[builtin]()
+  end, { silent = true, desc = desc })
+end
+pick("<leader>ff", "find_files", "Find files")
+pick("<leader>fg", "git_files", "Find git files")
+pick("<leader>fo", "oldfiles", "Recent files")
+pick("<leader>fb", "buffers", "Buffers")
+pick("<leader>fl", "live_grep", "Live grep")
+pick("<leader>fc", "grep_string", "Grep word under cursor")
+pick("<leader>fd", "diagnostics", "Diagnostics")
+pick("<leader>fh", "help_tags", "Help tags")
 
------------------
--- Visual mode --
------------------
-
--- Hint: start visual mode with the same area as the previous area and the same mode
-vim.keymap.set("v", "<", "<gv", opts)
-vim.keymap.set("v", ">", ">gv", opts)
-
--- For nvim-treesitter
--- 1. Press `gss` to intialize selection. (ss = start selection)
--- 2. Now we are in the visual mode.
--- 3. Press `gsi` to increment selection by AST node. (si = selection incremental)
--- 4. Press `gsc` to increment selection by scope. (sc = scope)
--- 5. Press `gsd` to decrement selection. (sd = selection decrement)
+-- Trouble（诊断/符号列表）
+map("n", "<leader>xx", "<cmd>Trouble diagnostics toggle<cr>", "Diagnostics (Trouble)")
+map("n", "<leader>xX", "<cmd>Trouble diagnostics toggle filter.buf=0<cr>", "Buffer diagnostics")
+map("n", "<leader>cs", "<cmd>Trouble symbols toggle focus=false<cr>", "Symbols (Trouble)")
+map("n", "<leader>cl", "<cmd>Trouble lsp toggle focus=false win.position=right<cr>", "LSP references")
+map("n", "<leader>xL", "<cmd>Trouble loclist toggle<cr>", "Location list")
+map("n", "<leader>xQ", "<cmd>Trouble qflist toggle<cr>", "Quickfix list")

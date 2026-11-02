@@ -1,148 +1,112 @@
--- Note: The order matters: require("mason") -> require("mason-lspconfig") -> require("lspconfig")
+-- LSP 配置（Neovim 0.11+ 原生方式）
+-- 语言服务器列表：:Mason 安装，vim.lsp.enable 启用
 
+local servers = { "lua_ls", "clangd", "bashls", "pylsp" }
+
+-- 1. 安装器
 require("mason").setup({
-  ui = {
-    icons = {
-      package_installed = "✓",
-      package_pending = "➜",
-      package_uninstalled = "✗",
-    },
-  },
+  ui = { border = "rounded" },
 })
 
 require("mason-lspconfig").setup({
-  -- A list of servers to automatically install if they're not already installed.
-  ensure_installed = { "clangd", "lua_ls" },
+  -- 缺失的服务器会自动安装；已安装的会自动 enable
+  ensure_installed = servers,
+  automatic_enable = true,
 })
 
--- Set different settings for different languages' LSP.
--- LSP list: https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
--- How to use setup({}): https://github.com/neovim/nvim-lspconfig/wiki/Understanding-setup-%7B%7D
---     - the settings table is sent to the LSP.
---     - on_attach: a lua callback function to run after LSP attaches to a given buffer.
-local lspconfig = require("lspconfig")
-
--- Customized on_attach function.
--- See `:help vim.diagnostic.*` for documentation on any of the below functions.
-local opts = { noremap = true, silent = true }
-vim.keymap.set("n", ",e", vim.diagnostic.open_float, opts)
-vim.keymap.set("n", "[d", vim.diagnostic.goto_prev, opts)
-vim.keymap.set("n", "]d", vim.diagnostic.goto_next, opts)
-vim.keymap.set("n", ",q", vim.diagnostic.setloclist, opts)
-
-local function quickfix()
-    vim.lsp.buf.code_action({
-        filter = function(a) return a.isPreferred end,
-        apply = true
-    })
-end
-vim.keymap.set('n', '<leader>qf', quickfix, opts)
-
--- Use an on_attach function to only map the following keys
--- after the language server attaches to the current buffer.
-local on_attach = function(client, bufnr)
-  -- Enable completion triggered by <c-x><c-o>
-  vim.api.nvim_buf_set_option(bufnr, "omnifunc", "v:lua.vim.lsp.omnifunc")
-  -- WARNING: This feature requires Neovim 0.10 or later.
-  vim.lsp.inlay_hint.enable(true)
-  vim.g.inlay_hints_visible = false
- local function toggle_inlay_hints()
-    if vim.g.inlay_hints_visible then
-      vim.g.inlay_hints_visible = false
-      vim.lsp.inlay_hint.enable(true)
-    else
-      if client.server_capabilities.inlayHintProvider then
-        vim.g.inlay_hints_visible = true
-        vim.lsp.inlay_hint.enable(true)
-      else
-        print("no inlay hints available")
-      end
-    end
-  end
-
-  -- See `:help vim.lsp.*` for documentation on any of the below functions
-  local bufopts = { noremap = true, silent = true, buffer = bufnr }
-  vim.keymap.set("n", "gD", vim.lsp.buf.declaration, bufopts)
-  vim.keymap.set("n", "gd", vim.lsp.buf.definition, bufopts)
-  vim.keymap.set("n", "K", vim.lsp.buf.hover, bufopts)
-  vim.keymap.set("n", "gi", vim.lsp.buf.implementation, bufopts)
-  vim.keymap.set("n", "<C-k>", vim.lsp.buf.signature_help, bufopts)
-  vim.keymap.set("n", ",wa", vim.lsp.buf.add_workspace_folder, bufopts)
-  vim.keymap.set("n", ",wr", vim.lsp.buf.remove_workspace_folder, bufopts)
-  vim.keymap.set(
-    "n",
-    "<leader>dh",
-    toggle_inlay_hints,
-    vim.tbl_extend("force", bufopts, { desc = "✨lsp toggle inlay hints" })
-  )
-  vim.keymap.set("n", ",wl", function()
-    print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
-  end, bufopts)
-  vim.keymap.set("n", ",D", vim.lsp.buf.type_definition, bufopts)
-  vim.keymap.set("n", ",rn", vim.lsp.buf.rename, bufopts)
-  vim.keymap.set("n", ",ca", vim.lsp.buf.code_action, bufopts)
-  vim.keymap.set("n", "gr", vim.lsp.buf.references, bufopts)
-  vim.keymap.set('n', ',f', function() vim.lsp.buf.format { async = true } end, bufopts)
-end
-
--- How to add a LSP for a specific programming language?
--- 1. Use `:Mason` to install the corresponding LSP.
--- 2. Add the configuration below. The syntax is `lspconfig.<name>.setup(...)`
--- Hint (find <name> here) : https://github.com/neovim/nvim-lspconfig/blob/master/doc/server_configurations.md
-lspconfig.pylsp.setup({
-  on_attach = on_attach,
+-- 2. 全局默认（对所有服务器生效）：补全能力 + 诊断样式
+vim.lsp.config("*", {
+  capabilities = require("cmp_nvim_lsp").default_capabilities(),
 })
 
-lspconfig.lua_ls.setup({
-  on_attach = on_attach,
+vim.diagnostic.config({
+  virtual_text = { spacing = 2, prefix = "●" },
+  severity_sort = true,
+  float = { border = "rounded", source = true },
+  jump = { float = true },
+})
+
+-- 3. 各服务器专属设置
+vim.lsp.config("lua_ls", {
   settings = {
     Lua = {
-      runtime = {
-        -- Tell the language server which version of Lua you're using (most likely LuaJIT in the case of Neovim).
-        version = "LuaJIT",
-      },
-      diagnostics = {
-        -- Get the language server to recognize the `vim` global.
-        globals = { "vim" },
-      },
+      runtime = { version = "LuaJIT" },
+      diagnostics = { globals = { "vim" } },
       workspace = {
-        -- Make the server aware of Neovim runtime files.
         library = vim.api.nvim_get_runtime_file("", true),
+        checkThirdParty = false,
       },
-      -- Do not send telemetry data containing a randomized but unique identifier.
-      telemetry = {
-        enable = false,
-      },
-      hint = { true },
+      telemetry = { enable = false },
+      hint = { enable = true },
     },
   },
 })
 
-lspconfig.bashls.setup({})
-
-lspconfig.clangd.setup({
-  on_attach = on_attach,
-  filetypes = { "h", "c", "cpp", "cc", "objc", "objcpp" },
+-- clangd: 后台索引，编译参数从 compile_commands.json / .clangd 读取
+--   cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
+vim.lsp.config("clangd", {
   cmd = { "clangd", "--background-index" },
-  single_file_support = true,
-  root_dir = lspconfig.util.root_pattern(
-    '.clangd',
-    '.clang-tidy',
-    '.clang-format',
-    'compile_commands.json',
-    'compile_flags.txt',
-    'configure.ac',
-    '.git'
-  ),
 })
 
--- Case 1. For CMake User
---     $ cmake -DCMAKE_EXPORT_COMPILE_COMMANDS=ON .
--- Case 2. For Bazel User, use https://github.com/hedronvision/bazel-compile-commands-extractor
--- Case 3. If you don't use any build tool and all files in a project use the same build flags
---     Place your compiler flags in the compile_flags.txt file, located in the root directory
---     of your project. Each line in the file should contain a single compiler flag.
--- src: https://clangd.llvm.org/installation#compile_commandsjson
-lspconfig.clangd.setup({
-  on_attach = on_attach,
+-- 4. 启用
+vim.lsp.enable(servers)
+
+-- 5. 缓冲区内的按键（仅在 LSP 附加后生效）
+vim.api.nvim_create_autocmd("LspAttach", {
+  group = vim.api.nvim_create_augroup("UserLspAttach", { clear = true }),
+  callback = function(ev)
+    local function map(lhs, rhs, desc)
+      vim.keymap.set("n", lhs, rhs, { buffer = ev.buf, silent = true, desc = desc })
+    end
+
+    map("gd", vim.lsp.buf.definition, "Go to definition")
+    map("gD", vim.lsp.buf.declaration, "Go to declaration")
+    map("gi", vim.lsp.buf.implementation, "Go to implementation")
+    map(",D", vim.lsp.buf.type_definition, "Go to type definition")
+    map("K", vim.lsp.buf.hover, "Hover documentation")
+    map("<C-k>", vim.lsp.buf.signature_help, "Signature help")
+    map(",rn", vim.lsp.buf.rename, "Rename symbol")
+    map(",ca", vim.lsp.buf.code_action, "Code action")
+    map("gr", vim.lsp.buf.references, "References")
+    map(",f", function()
+      vim.lsp.buf.format({ async = true })
+    end, "Format buffer")
+
+    -- 只应用首选修复（quick fix）
+    map("<leader>qf", function()
+      vim.lsp.buf.code_action({
+        filter = function(a)
+          return a.isPreferred
+        end,
+        apply = true,
+      })
+    end, "Apply preferred code action")
+
+    -- 工作区目录
+    map(",wa", vim.lsp.buf.add_workspace_folder, "Add workspace folder")
+    map(",wr", vim.lsp.buf.remove_workspace_folder, "Remove workspace folder")
+    map(",wl", function()
+      print(vim.inspect(vim.lsp.buf.list_workspace_folders()))
+    end, "List workspace folders")
+
+    -- inlay hints 开关
+    local bufnr = ev.buf
+    map("<leader>dh", function()
+      local enabled = vim.lsp.inlay_hint.is_enabled({ bufnr = bufnr })
+      vim.lsp.inlay_hint.enable(not enabled, { bufnr = bufnr })
+    end, "Toggle inlay hints")
+
+    -- 诊断跳转
+    map("[d", function()
+      vim.diagnostic.jump({ count = -1, float = true })
+    end, "Previous diagnostic")
+    map("]d", function()
+      vim.diagnostic.jump({ count = 1, float = true })
+    end, "Next diagnostic")
+    map(",e", vim.diagnostic.open_float, "Show diagnostic in float")
+    map(",q", vim.diagnostic.setloclist, "Diagnostics to location list")
+  end,
 })
+
+-- C/C++ 头文件与源文件切换
+vim.keymap.set("n", "<leader>h", "<cmd>ClangdSwitchSourceHeader<cr>", { silent = true, desc = "Switch source/header" })
