@@ -150,6 +150,20 @@ clone_plugin() {
   fi
 }
 
+clone_theme() {
+  local name="$1" url="$2"
+  local dest="$OMZ_DIR/custom/themes/$name"
+  if [ -d "$dest/.git" ] || [ -d "$dest" ]; then
+    ok "主题 $name 已存在"
+  else
+    info "安装 zsh 主题 $name"
+    run "git clone --depth=1 '$url' '$dest'"
+  fi
+}
+
+info "检查 zsh 主题"
+clone_theme powerlevel10k https://github.com/romkatv/powerlevel10k.git
+
 info "检查 zsh 插件"
 clone_plugin zsh-autosuggestions  https://github.com/zsh-users/zsh-autosuggestions.git
 clone_plugin zsh-syntax-highlighting https://github.com/zsh-users/zsh-syntax-highlighting.git
