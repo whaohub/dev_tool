@@ -50,8 +50,9 @@ bindkey '^[[1;5C' forward-word
 # Alt/Option+←/→ 的两种常见序列
 bindkey '^[[1;3D' backward-word
 bindkey '^[[1;3C' forward-word
-bindkey '^[OD' backward-word
-bindkey '^[OC' forward-word
+# 方向键按字符移动（^[OD/^[OC 是普通 ←/→ 的 SS3 应用光标序列，不是 Alt+←/→）
+bindkey '^[OD' backward-char
+bindkey '^[OC' forward-char
 
 # Home / End / Delete（xterm 与 linux consolevariant 都覆盖）
 bindkey '^[[H' beginning-of-line
